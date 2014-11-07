@@ -1,0 +1,32 @@
+image: bradrydzewski/go:1.3
+script:
+  - go get code.google.com/p/go.tools/cmd/vet
+  - go get code.google.com/p/go.tools/cmd/godoc
+  - go get code.google.com/p/go.tools/cmd/cover
+  - go get github.com/mattn/goveralls
+  - go get github.com/golang/lint/golint
+
+  - go get -d -t ./...
+
+  - go fmt ./...
+  - go vet ./...
+  - golint ./...
+  # - go build --tags SOMETAG
+  # - go test -v -covermode=count -coverprofile=profile.cov ./...
+  # - goveralls -coverprofile=profile.cov -service=travis-ci
+
+
+notify:
+    email:
+        recipients:
+            - olivier@docker.com
+            - stephen.day@docker.com
+    slack:
+        team: docker
+        channel: "#distribution"
+        username: mom
+        token: cwX6NE0KKYYQnZJVRaYWGxxJ
+        on_success: true
+        on_failure: true
+        icon_url: http://www.esquire.com/cm/esquire/images/Sn/esq-cook-mom-022812-xlg.jpg
+
