@@ -32,9 +32,20 @@ RUN patch \
  $(python -c 'import boto; import os; print os.path.dirname(boto.__file__)')/connection.py \
  < /docker-registry/contrib/boto_header_patch.diff
 
+# TTM Modifications
+RUN apt-get -y install wget 
+RUN /bin/cat > /etc/apt/sources.list.d/nginx.list <<< "deb http://nginx.org/packages/ubuntu/ trusty nginx"
+RUN /usr/bin/wget --quiet -O - http://nginx.org/keys/nginx_signing.key | /usr/bin/apt-key add -
+
+RUN apt-get -y update
+RUN apt-get -y install nginx supervisor apache2-utils
+
+COPY ./contrib/ttm/nginx.conf /etc/nginx/nginx.conf
+COPY ./contrib/ttm/supervisord-registry.conf /etc/supervisor/conf.d/registry.conf
+
 ENV DOCKER_REGISTRY_CONFIG /docker-registry/config/config_sample.yml
 ENV SETTINGS_FLAVOR dev
 
-EXPOSE 5000
+EXPOSE 443
 
-CMD ["docker-registry"]
+CMD ["supervisord"]
